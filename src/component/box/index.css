@@ -1,0 +1,17 @@
+/* file box.css */
+.box {
+  width: 100%;
+  border: 1px solid #b9adad;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* .box--light {
+  background-color: rgb(238, 217, 217);
+  color: #000000;
+}
+
+.box--dark {
+  background-color: #271515;
+  color: #e22121;
+} */
