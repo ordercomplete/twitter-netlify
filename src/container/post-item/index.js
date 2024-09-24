@@ -6,7 +6,7 @@ import Box from "../../component/box";
 
 import PostCreate from "../post-create";
 
-import { Alert, Loader, Skeleton, LOAD_STATUS } from "../../component/load";
+import { Alert, Skeleton, LOAD_STATUS } from "../../component/load";
 
 import { getDate } from "../../util/getDate";
 
