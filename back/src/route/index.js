@@ -1,3 +1,4 @@
+// src/route/index.js
 // Підключаємо роутер до бек-енду
 const express = require('express')
 const router = express.Router()
