@@ -1,51 +1,60 @@
 // file post-item.js
 import { useState, Fragment, useEffect, useReducer, useCallback } from "react";
-
+import "./style.css";
 import Grid from "../../component/grid";
 import Box from "../../component/box";
-
 import PostCreate from "../post-create";
-
 import { Alert, Skeleton, LOAD_STATUS } from "../../component/load";
-
 import { getDate } from "../../util/getDate";
-
 import PostContent from "../../component/post-content";
-
 import {
   requestInitialState,
   requestReducer,
   REQUEST_ACTION_TYPE,
 } from "../../util/request";
 
+import {
+  getPostById,
+  createReply,
+  deletePost,
+  deleteReply,
+} from "../../util/mockData";
+
 export default function Container({ id, username, text, date }) {
   const [state, dispatch] = useReducer(
     requestReducer,
     requestInitialState,
-    (state) => ({ ...state, data: { id, username, text, date, reply: null } })
+    (state) => ({ ...state, data: { id, username, text, date, reply: [] } })
+  );
+  // const [post, setPost] = useState(null);
+
+  const addReply = useCallback(
+    (newReply) => {
+      dispatch({
+        type: REQUEST_ACTION_TYPE.SUCCESS,
+        payload: {
+          ...state.data,
+          reply: [newReply, ...state.data.reply],
+        },
+      });
+    },
+    [state.data]
   );
 
-  // const [status, setStatus] = useState(null);
-  // const [message, setMessage] = useState("");
-
-  const getData = useCallback(async () => {
+  const getData = useCallback(() => {
+    //було прибрано (async () =>
     dispatch({ type: REQUEST_ACTION_TYPE.PROGRESS });
-    try {
-      const res = await fetch(
-        `http://localhost:4000/post-item?id=${state.data.id}`
-      );
 
-      const resData = await res.json();
-      if (res.ok) {
+    try {
+      const post = getPostById(state.data.id);
+
+      if (post) {
         dispatch({
           type: REQUEST_ACTION_TYPE.SUCCESS,
-          payload: convertData(resData),
+          payload: convertData({ post }),
         });
       } else {
-        dispatch({
-          type: REQUEST_ACTION_TYPE.ERROR,
-          payload: resData.message,
-        });
+        throw new Error("Post not found");
       }
     } catch (error) {
       dispatch({
@@ -61,14 +70,14 @@ export default function Container({ id, username, text, date }) {
     text: post.text,
     date: getDate(post.date),
 
-    reply: post.reply.reverse().map(({ id, username, text, date }) => ({
+    reply: (post.reply || []).reverse().map(({ id, username, text, date }) => ({
       id,
       username,
       text,
       date: getDate(date),
     })),
 
-    isEmpty: post.reply.length === 0,
+    isEmpty: !post.reply || post.reply.length === 0,
   });
 
   const [isOpen, setOpen] = useState(false);
@@ -77,26 +86,56 @@ export default function Container({ id, username, text, date }) {
     setOpen(!isOpen);
   };
 
+  const handleReply = async (data) => {
+    try {
+      const newReply = await createReply(state.data.id, data);
+      addReply(newReply);
+      getData(); // Викликаємо функцію getData, щоб оновити стан компонента
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    if (isOpen === true) {
+    if (isOpen) {
       getData();
     }
   }, [getData, isOpen]);
 
+  const handleDeletePost = (postId) => {
+    deletePost(postId);
+    getData(); // Оновлює стан після видалення
+  };
+
+  const handleDeleteReply = (postId, replyId) => {
+    deleteReply(postId, replyId);
+    getData(); // Оновлює стан після видалення
+  };
+
+  // const handleDeleteReply = (postId, replyId) => {
+  //   const post = getPostById(postId);
+  //   if (post) {
+  //     deleteReply(postId, replyId);
+  //     getData(); // Оновлює стан після видалення
+  //   } else {
+  //     console.error("Post not found");
+  //   }
+  // };
+
   return (
     <Box style={{ padding: "0" }}>
-      <div
-        style={{
-          padding: "20px",
-          cursor: "pointer",
-        }}
-        onClick={handleOpen}
-      >
+      <div className="post-header" onClick={handleOpen}>
         <PostContent
           username={state.data.username}
           date={state.data.date}
           text={state.data.text}
         />
+        <button
+          onClick={() => handleDeletePost(state.data.id)}
+          className="field-form__button-del"
+        >
+          X
+        </button>
       </div>
 
       {isOpen && (
@@ -107,6 +146,7 @@ export default function Container({ id, username, text, date }) {
                 placeholder="Post your reply!"
                 button="Reply"
                 id={state.data.id}
+                onSubmit={handleReply}
                 onCreate={getData}
               />
             </Box>
@@ -125,11 +165,17 @@ export default function Container({ id, username, text, date }) {
               <Alert status={state.status} message={state.message} />
             )}
             {state.status === LOAD_STATUS.SUCCESS &&
-              state.data.isEmpty === false &&
+              !state.data.isEmpty &&
               state.data.reply.map((item) => (
                 <Fragment key={item.id}>
-                  <Box>
+                  <Box className="post-reply">
                     <PostContent {...item} />
+                    <button
+                      onClick={() => handleDeleteReply(state.data.id, item.id)}
+                      className="field-form__button-del"
+                    >
+                      X
+                    </button>
                   </Box>
                 </Fragment>
               ))}

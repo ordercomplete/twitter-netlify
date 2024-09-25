@@ -10,20 +10,19 @@ import {
   useContext,
 } from "react";
 import { ThemeContext } from "../../App";
-
 import Title from "../../component/title";
 import Grid from "../../component/grid";
 import Box from "../../component/box";
-
 import PostCreate from "../post-create";
 import { Alert, Skeleton, LOAD_STATUS } from "../../component/load";
 import { getDate } from "../../util/getDate";
-
 import {
   requestInitialState,
   requestReducer,
   REQUEST_ACTION_TYPE,
 } from "../../util/request";
+
+import { getPosts } from "../../util/mockData"; // Імпортуємо мокап дані
 import "../../theme.css";
 
 const PostItem = lazy(() => import("../post-item"));
@@ -31,24 +30,16 @@ const PostItem = lazy(() => import("../post-item"));
 export default function Container({ onSubmit }) {
   const [state, dispatch] = useReducer(requestReducer, requestInitialState);
 
-  const getData = useCallback(async () => {
-    dispatch({ type: LOAD_STATUS.PROGRESS });
+  const getData = useCallback(() => {
+    dispatch({ type: REQUEST_ACTION_TYPE.PROGRESS });
+
     try {
-      const res = await fetch("http://localhost:4000/post-list");
+      const data = { list: getPosts().slice().reverse() }; // Отримуємо дані з localStorage та перевертаємо масив
 
-      const data = await res.json();
-
-      if (res.ok) {
-        dispatch({
-          type: REQUEST_ACTION_TYPE.SUCCESS,
-          payload: convertData(data),
-        });
-      } else {
-        dispatch({
-          type: REQUEST_ACTION_TYPE.ERROR,
-          payload: data.message,
-        });
-      }
+      dispatch({
+        type: REQUEST_ACTION_TYPE.SUCCESS,
+        payload: convertData(data),
+      });
     } catch (error) {
       dispatch({
         type: REQUEST_ACTION_TYPE.ERROR,
@@ -58,13 +49,18 @@ export default function Container({ onSubmit }) {
   }, []);
 
   const convertData = (raw) => ({
-    list: raw.list.reverse().map(({ id, username, text, date }) => ({
+    list: raw.list.map(({ id, username, text, date, reply }) => ({
       id,
       username,
       text,
       date: getDate(date),
+      reply: (reply || []).reverse().map(({ id, username, text, date }) => ({
+        id,
+        username,
+        text,
+        date: getDate(date),
+      })),
     })),
-
     isEmpty: raw.list.length === 0,
   });
 
@@ -74,6 +70,7 @@ export default function Container({ onSubmit }) {
 
   const { toggle, theme } = useContext(ThemeContext);
   // const THEME_ACTION_TYPE = { TOGGLE: "toggle" };
+
   return (
     <div
       style={{

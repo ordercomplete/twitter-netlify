@@ -1,3 +1,4 @@
+// file getDate.js
 export const getDate = (time) => {
   // Створення об'єкта Date на основі Unix-часу
   const date = new Date(time);

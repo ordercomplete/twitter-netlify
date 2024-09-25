@@ -1,70 +1,80 @@
+// file post-create.js
 import { useReducer, memo, useCallback } from "react";
-
 import "./index.css";
-
 import FieldForm from "../../component/field-form";
 import Grid from "../../component/grid";
-
 import { Alert, Loader, LOAD_STATUS } from "../../component/load";
-
 import {
   requestInitialState,
   requestReducer,
   REQUEST_ACTION_TYPE,
 } from "../../util/request";
-// import Container from "../post-item";
+import { createPost, createReply } from "../../util/mockData";
 
 function Container({ onCreate, placeholder, button, id = null }) {
   const [state, dispatch] = useReducer(requestReducer, requestInitialState);
 
   const convertData = useCallback(
-    ({ value }) =>
-      JSON.stringify({
-        text: value,
-        username: "user",
-        postId: id,
-      }),
-    [id]
+    ({ value }) => ({
+      id: new Date().getTime().toString(), // Генеруємо унікальний ID на основі часу
+      text: value,
+      username: "user", // Ім'я користувача можна налаштувати при потребі
+      date: new Date().toISOString(),
+    }),
+    []
   );
 
   const sendData = useCallback(
     async ({ dataToSend }) => {
       dispatch({ type: REQUEST_ACTION_TYPE.PROGRESS });
 
+      //   try {
+      //     const newPost = convertData(dataToSend);
+
+      //     if (id) {
+      //       const reply = await createReply(id, newPost);
+      //       if (onCreate) onCreate(reply);
+      //     } else {
+      //       const post = await createPost(newPost);
+      //       if (onCreate) onCreate(post);
+      //     }
+
+      //     dispatch({ type: REQUEST_ACTION_TYPE.RESET });
+      //   } catch (error) {
+      //     dispatch({
+      //       type: REQUEST_ACTION_TYPE.ERROR,
+      //       payload: error.message,
+      //     });
+      //   }
+      // },
+      // [convertData, onCreate, id]
       try {
-        const res = await fetch("http://localhost:4000/post-create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: convertData(dataToSend),
-        });
+        const newData = convertData(dataToSend);
 
-        const data = await res.json();
-
-        if (res.ok) {
-          dispatch({ type: REQUEST_ACTION_TYPE.RESET });
-
-          if (onCreate) onCreate();
+        let response;
+        if (id) {
+          response = await createReply(id, newData);
         } else {
-          dispatch({
-            type: REQUEST_ACTION_TYPE.PROGRESS,
-            message: data.message,
-          });
+          response = await createPost(newData);
         }
+
+        if (onCreate) {
+          onCreate(response);
+        }
+
+        dispatch({ type: REQUEST_ACTION_TYPE.RESET });
       } catch (error) {
         dispatch({
-          type: REQUEST_ACTION_TYPE.PROGRESS,
-          message: error.message,
+          type: REQUEST_ACTION_TYPE.ERROR,
+          payload: error.message,
         });
       }
     },
-    [convertData, onCreate]
+    [convertData, onCreate, id]
   );
 
   const handleSubmit = useCallback(
     (value) => {
-      //Стара версія, яка не працювала: return sendData({ value }) - чому?
       return sendData({ dataToSend: { value } });
     },
     [sendData]
@@ -77,6 +87,7 @@ function Container({ onCreate, placeholder, button, id = null }) {
         button={button}
         onSubmit={handleSubmit}
       />
+
       {state.status === LOAD_STATUS.ERROR && (
         <Alert status={state.status} message={state.message} />
       )}
@@ -86,7 +97,7 @@ function Container({ onCreate, placeholder, button, id = null }) {
 }
 
 export default memo(Container, (prev, next) => {
-  // console.log(prev, next);
+  console.log(prev, next);
   return true;
 });
 

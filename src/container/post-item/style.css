@@ -1,0 +1,21 @@
+.field-form__button-del {
+  /* display: flex;
+  justify-content: end; */
+  width: 30px;
+  height: 30px;
+  background-color: rgb(255, 135, 135);
+  border-radius: 20px;
+}
+
+.post-header {
+
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.post-reply {
+  display: flex;
+  justify-content: space-between;
+}

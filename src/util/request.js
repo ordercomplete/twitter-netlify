@@ -1,3 +1,4 @@
+// file request.js
 export const REQUEST_ACTION_TYPE = {
   PROGRESS: "progress",
   SUCCESS: "success",

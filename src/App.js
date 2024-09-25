@@ -3,7 +3,7 @@ import { useMemo, createContext, useReducer, useEffect } from "react";
 import Page from "./component/page";
 import PostList from "./container/post-list";
 import "./theme.css";
-
+import { getPosts, savePosts } from "./util/mockData";
 export const THEME_TYPE = {
   LIGHT: "light",
   DARK: "dark",
@@ -46,6 +46,10 @@ function App() {
     }),
     [currentTheme, dispatch]
   );
+  useEffect(() => {
+    const posts = getPosts();
+    savePosts(posts);
+  }, []);
   useEffect(() => {
     theme.setTheme();
   }, [theme]);
