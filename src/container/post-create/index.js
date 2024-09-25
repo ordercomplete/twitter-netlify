@@ -26,22 +26,19 @@ function Container({ onCreate, placeholder, button, id = null }) {
       }),
     [id]
   );
-  // "http://localhost:4000/post-create",
+
   const sendData = useCallback(
     async ({ dataToSend }) => {
       dispatch({ type: REQUEST_ACTION_TYPE.PROGRESS });
 
       try {
-        const res = await fetch(
-          "https://twitter-netlify-for-resume.netlify.app/post-create",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: convertData(dataToSend),
-          }
-        );
+        const res = await fetch("http://localhost:4000/post-create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: convertData(dataToSend),
+        });
 
         const data = await res.json();
 
