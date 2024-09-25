@@ -30,12 +30,11 @@ const PostItem = lazy(() => import("../post-item"));
 
 export default function Container({ onSubmit }) {
   const [state, dispatch] = useReducer(requestReducer, requestInitialState);
-
+  // "http://localhost:4000",
   const getData = useCallback(async () => {
     dispatch({ type: LOAD_STATUS.PROGRESS });
     try {
       const res = await fetch(
-        // "http://localhost:4000",
         "https://twitter-netlify-for-resume.netlify.app/post-list"
       );
 

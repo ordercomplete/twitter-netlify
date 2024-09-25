@@ -27,12 +27,11 @@ export default function Container({ id, username, text, date }) {
 
   // const [status, setStatus] = useState(null);
   // const [message, setMessage] = useState("");
-
+  // `http://localhost:4000`,
   const getData = useCallback(async () => {
     dispatch({ type: REQUEST_ACTION_TYPE.PROGRESS });
     try {
       const res = await fetch(
-        // `http://localhost:4000`,
         `https://twitter-netlify-for-resume.netlify.app/post-item?id=${state.data.id}`
       );
 
