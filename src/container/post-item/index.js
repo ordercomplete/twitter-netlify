@@ -32,7 +32,8 @@ export default function Container({ id, username, text, date }) {
     dispatch({ type: REQUEST_ACTION_TYPE.PROGRESS });
     try {
       const res = await fetch(
-        `http://localhost:4000/post-item?id=${state.data.id}`
+        // `http://localhost:4000`,
+        `https://twitter-netlify-for-resume.netlify.app/post-item?id=${state.data.id}`
       );
 
       const resData = await res.json();

@@ -34,7 +34,10 @@ export default function Container({ onSubmit }) {
   const getData = useCallback(async () => {
     dispatch({ type: LOAD_STATUS.PROGRESS });
     try {
-      const res = await fetch("http://localhost:4000/post-list");
+      const res = await fetch(
+        // "http://localhost:4000",
+        "https://twitter-netlify-for-resume.netlify.app/post-list"
+      );
 
       const data = await res.json();
 

@@ -33,7 +33,8 @@ function Container({ onCreate, placeholder, button, id = null }) {
 
       try {
         const res = await fetch(
-          "https://twitter-netlify-for-resume.netlify.app:4000/post-create",
+          // "http://localhost:4000/post-create",
+          "https://twitter-netlify-for-resume.netlify.app/post-create",
           {
             method: "POST",
             headers: {
