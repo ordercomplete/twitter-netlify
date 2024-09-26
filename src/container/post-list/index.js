@@ -23,6 +23,7 @@ import {
 } from "../../util/request";
 
 import { getPosts } from "../../util/mockData"; // Імпортуємо мокап дані
+
 import "../../theme.css";
 
 const PostItem = lazy(() => import("../post-item"));
@@ -63,6 +64,20 @@ export default function Container({ onSubmit }) {
     })),
     isEmpty: raw.list.length === 0,
   });
+
+  const handleRemovePost = (postId) => {
+    const updatedPosts = state.data.list.filter((post) => post.id !== postId);
+    dispatch({
+      type: REQUEST_ACTION_TYPE.SUCCESS,
+      payload: { list: updatedPosts, isEmpty: updatedPosts.length === 0 },
+    });
+  };
+  // const handleDeletePost = (postId) => {
+  //   deletePost(postId);
+  //   if (onRemovePost) {
+  //     onRemovePost(postId); // Інформуємо пост-лист про видалення
+  //   }
+  // };
 
   useEffect(() => {
     getData();
@@ -127,7 +142,7 @@ export default function Container({ onSubmit }) {
                       </Box>
                     }
                   >
-                    <PostItem {...item} />
+                    <PostItem {...item} onRemovePost={handleRemovePost} />
                   </Suspense>
                 </Fragment>
               ))

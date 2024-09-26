@@ -1,5 +1,5 @@
-/* theme.css */
-:root {
+/* theme.css перенесено у головний файл стилів*/
+/* :root {
   --light-bg-color: #fff;
   --light-text-color: #333;
   --light-accent-color: #9aa8b8;
@@ -13,7 +13,7 @@
   --dark-text-color-user: #82a4ca;
   --dark-text-color-date: #bbb8b8;
   --dark-caret-color: #9aa8b8;
-}
+} */
 
 /* LIGHT bed variant*/
 .light-theme .post-content__username {

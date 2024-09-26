@@ -20,13 +20,12 @@ import {
   deleteReply,
 } from "../../util/mockData";
 
-export default function Container({ id, username, text, date }) {
+export default function Container({ id, username, text, date, onRemovePost }) {
   const [state, dispatch] = useReducer(
     requestReducer,
     requestInitialState,
     (state) => ({ ...state, data: { id, username, text, date, reply: [] } })
   );
-  // const [post, setPost] = useState(null);
 
   const addReply = useCallback(
     (newReply) => {
@@ -42,7 +41,6 @@ export default function Container({ id, username, text, date }) {
   );
 
   const getData = useCallback(() => {
-    //було прибрано (async () =>
     dispatch({ type: REQUEST_ACTION_TYPE.PROGRESS });
 
     try {
@@ -104,32 +102,28 @@ export default function Container({ id, username, text, date }) {
 
   const handleDeletePost = (postId) => {
     deletePost(postId);
-    getData(); // Оновлює стан після видалення
+    if (onRemovePost) {
+      onRemovePost(postId); // Інформуємо пост-лист про видалення
+    }
+    // getData(); // Оновлює стан після видалення
   };
 
   const handleDeleteReply = (postId, replyId) => {
     deleteReply(postId, replyId);
+    console.log("Deleting reply with id:", replyId); // Логування
     getData(); // Оновлює стан після видалення
   };
 
-  // const handleDeleteReply = (postId, replyId) => {
-  //   const post = getPostById(postId);
-  //   if (post) {
-  //     deleteReply(postId, replyId);
-  //     getData(); // Оновлює стан після видалення
-  //   } else {
-  //     console.error("Post not found");
-  //   }
-  // };
-
   return (
     <Box style={{ padding: "0" }}>
-      <div className="post-header" onClick={handleOpen}>
-        <PostContent
-          username={state.data.username}
-          date={state.data.date}
-          text={state.data.text}
-        />
+      <div className="post-header">
+        <div className="post-header-data" onClick={handleOpen}>
+          <PostContent
+            username={state.data.username}
+            date={state.data.date}
+            text={state.data.text}
+          />
+        </div>
         <button
           onClick={() => handleDeletePost(state.data.id)}
           className="field-form__button-del"

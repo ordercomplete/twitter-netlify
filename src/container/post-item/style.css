@@ -15,6 +15,15 @@
   cursor: pointer;
 }
 
+.post-header-data {
+
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 450px;
+
+}
+
 .post-reply {
   display: flex;
   justify-content: space-between;

@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* theme.css */
+:root {
+  --light-bg-color: #fff;
+  --light-text-color: #333;
+  --light-accent-color: #9aa8b8;
+  --light-text-color-user: #000000;
+  --light-text-color-date: #7a7777;
+  --light-caret-color: #000000;
+
+  --dark-bg-color: #333;
+  --dark-text-color: #fff;
+  --dark-accent-color: #759fd3;
+  --dark-text-color-user: #82a4ca;
+  --dark-text-color-date: #bbb8b8;
+  --dark-caret-color: #9aa8b8;
+}
